@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: forge
+      POSTGRES_USER: forge
+      POSTGRES_PASSWORD: forge
+    ports: ["5432:5432"]
+    volumes: [forge_data:/var/lib/postgresql/data]
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+
+  backend:
+    build: ./backend
+    ports: ["8000:8000"]
+    environment:
+      DATABASE_URL: postgresql://forge:forge@db:5432/forge
+      REDIS_URL: redis://redis:6379/0
+      SECRET_KEY: dev-secret-key-change-me
+      CORS_ORIGINS: http://localhost:3000
+      ENVIRONMENT: development
+    depends_on: [db, redis]
+
+  web:
+    build:
+      context: ./web
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:8000
+    ports: ["3000:3000"]
+    depends_on: [backend]
+
+volumes:
+  forge_data:

@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+*.db
+.env
+uploads/
+
+node_modules/
+.next/
+out/
+.vercel
+
+.DS_Store
+*.log
+.idea/
+.vscode/

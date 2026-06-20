@@ -1,0 +1,215 @@
+"use client";
+import { useState, useCallback } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
+import { Search, Plus, Download, X, BarChart3 } from "lucide-react";
+import { api, apiErr } from "@/lib/api";
+import { Card, ErrorNote, Spinner, Badge, Empty } from "@/components/ui";
+import { DataTable } from "@/components/data-table";
+import { DynamicForm } from "@/components/dynamic-form";
+import type { Spreadsheet, PaginatedRows, DataRow, ChartRecommendation } from "@/lib/types";
+import { ResponsiveContainer, BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
+
+const COLORS = ["#F59E0B", "#3B82F6", "#10B981", "#F43F5E", "#8B5CF6", "#EC4899", "#14B8A6", "#F97316"];
+
+export default function SpreadsheetDetail() {
+  const { id } = useParams<{ id: string }>();
+  const qc = useQueryClient();
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState<string | null>(null);
+  const [sortDir, setSortDir] = useState("asc");
+  const [showForm, setShowForm] = useState(false);
+  const [editRow, setEditRow] = useState<DataRow | null>(null);
+  const [err, setErr] = useState("");
+  const [tab, setTab] = useState<"data" | "charts">("data");
+
+  const { data: sheet, isLoading: sheetLoading } = useQuery<Spreadsheet>({
+    queryKey: ["spreadsheet", id],
+    queryFn: () => api.get(`/spreadsheets/${id}`).then((r) => r.data),
+  });
+
+  const { data: rowsData, isLoading: rowsLoading } = useQuery<PaginatedRows>({
+    queryKey: ["rows", id, page, search, sortBy, sortDir],
+    queryFn: () =>
+      api.get(`/spreadsheets/${id}/rows`, {
+        params: { page, per_page: 25, search: search || undefined, sort_by: sortBy, sort_dir: sortDir },
+      }).then((r) => r.data),
+    enabled: !!sheet,
+  });
+
+  const { data: charts } = useQuery<ChartRecommendation[]>({
+    queryKey: ["charts", id],
+    queryFn: () => api.get(`/spreadsheets/${id}/charts/recommend`).then((r) => r.data),
+    enabled: !!sheet && tab === "charts",
+  });
+
+  const createRow = useMutation({
+    mutationFn: (data: Record<string, unknown>) => api.post(`/spreadsheets/${id}/rows`, { data }),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["rows", id] }); setShowForm(false); setErr(""); },
+    onError: (e) => setErr(apiErr(e)),
+  });
+
+  const updateRow = useMutation({
+    mutationFn: ({ rowId, data }: { rowId: number; data: Record<string, unknown> }) =>
+      api.put(`/spreadsheets/${id}/rows/${rowId}`, { data }),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["rows", id] }); setEditRow(null); setErr(""); },
+    onError: (e) => setErr(apiErr(e)),
+  });
+
+  const deleteRow = useMutation({
+    mutationFn: (rowId: number) => api.delete(`/spreadsheets/${id}/rows/${rowId}`),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["rows", id] }),
+  });
+
+  const handleSort = useCallback((col: string) => {
+    if (sortBy === col) { setSortDir((d) => (d === "asc" ? "desc" : "asc")); }
+    else { setSortBy(col); setSortDir("asc"); }
+  }, [sortBy]);
+
+  const exportCSV = () => {
+    window.open(`${api.defaults.baseURL}/spreadsheets/${id}/rows/export?format=csv`, "_blank");
+  };
+
+  if (sheetLoading) return <div className="grid min-h-[60vh] place-items-center"><Spinner className="h-8 w-8 text-brand" /></div>;
+  if (!sheet) return <Empty title="Spreadsheet not found" />;
+
+  const cols = sheet.columns.sort((a, b) => a.position - b.position);
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-bold">{sheet.name}</h2>
+          <p className="flex items-center gap-2 text-sm text-ink-muted">
+            <Badge label={sheet.status} tone={sheet.status === "ready" ? "bull" : "warn"} />
+            {sheet.row_count} rows · {cols.length} columns
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <button onClick={() => setTab(tab === "data" ? "charts" : "data")} className="btn-ghost"><BarChart3 size={16} />{tab === "data" ? "Charts" : "Data"}</button>
+          <button onClick={exportCSV} className="btn-ghost"><Download size={16} /> Export</button>
+          <button onClick={() => { setEditRow(null); setShowForm(true); }} className="btn-primary"><Plus size={16} /> Add Row</button>
+        </div>
+      </div>
+
+      <ErrorNote message={err} />
+
+      {(showForm || editRow) && (
+        <Card>
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="text-sm font-semibold">{editRow ? "Edit Row" : "New Row"}</h3>
+            <button onClick={() => { setShowForm(false); setEditRow(null); }} className="cursor-pointer rounded-lg p-1 text-ink-faint hover:text-ink"><X size={16} /></button>
+          </div>
+          <DynamicForm
+            columns={cols}
+            initial={editRow?.data}
+            onSubmit={async (data) => { editRow ? await updateRow.mutateAsync({ rowId: editRow.id, data }) : await createRow.mutateAsync(data); }}
+            onCancel={() => { setShowForm(false); setEditRow(null); }}
+            submitLabel={editRow ? "Update" : "Create"}
+          />
+        </Card>
+      )}
+
+      {tab === "data" ? (
+        <>
+          <div className="relative">
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-faint" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+              placeholder="Search across all columns..."
+              className="field pl-10"
+            />
+          </div>
+
+          {rowsLoading ? (
+            <div className="grid min-h-[40vh] place-items-center"><Spinner className="h-6 w-6 text-brand" /></div>
+          ) : rowsData ? (
+            <DataTable
+              columns={cols}
+              rows={rowsData.rows}
+              total={rowsData.total}
+              page={rowsData.page}
+              pages={rowsData.pages}
+              sortBy={sortBy}
+              sortDir={sortDir}
+              onSort={handleSort}
+              onPage={setPage}
+              onEdit={(row) => { setEditRow(row); setShowForm(false); }}
+              onDelete={(row) => { if (confirm("Delete this row?")) deleteRow.mutate(row.id); }}
+            />
+          ) : null}
+        </>
+      ) : (
+        <ChartsDashboard spreadsheetId={id} charts={charts ?? []} />
+      )}
+    </div>
+  );
+}
+
+function ChartsDashboard({ spreadsheetId, charts }: { spreadsheetId: string; charts: ChartRecommendation[] }) {
+  if (charts.length === 0) return <Empty title="No chart recommendations" desc="Upload data with numeric and categorical columns to see charts." />;
+
+  return (
+    <div className="grid gap-6 md:grid-cols-2">
+      {charts.map((c, i) => (
+        <ChartCard key={i} spreadsheetId={spreadsheetId} chart={c} />
+      ))}
+    </div>
+  );
+}
+
+function ChartCard({ spreadsheetId, chart }: { spreadsheetId: string; chart: ChartRecommendation }) {
+  const { data, isLoading } = useQuery({
+    queryKey: ["chart-data", spreadsheetId, chart.chart_type, chart.x_column, chart.y_column],
+    queryFn: () =>
+      api.get(`/spreadsheets/${spreadsheetId}/charts/data`, {
+        params: { chart_type: chart.chart_type, x_column: chart.x_column, y_column: chart.y_column },
+      }).then((r) => r.data),
+  });
+
+  return (
+    <Card>
+      <h3 className="mb-4 text-sm font-semibold">{chart.title}</h3>
+      {isLoading ? (
+        <div className="grid h-52 place-items-center"><Spinner className="h-5 w-5 text-brand" /></div>
+      ) : chart.chart_type === "kpi" ? (
+        <div className="text-center">
+          <div className="text-4xl font-bold nums text-brand">{data?.value?.toLocaleString?.() ?? data?.value}</div>
+          {data?.label && <div className="mt-1 text-xs text-ink-muted">{data.label}</div>}
+        </div>
+      ) : (
+        <ResponsiveContainer width="100%" height={220}>
+          {chart.chart_type === "bar" ? (
+            <BarChart data={data?.points ?? []}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#23272F" />
+              <XAxis dataKey="x" tick={{ fill: "#9BA3AF", fontSize: 11 }} axisLine={{ stroke: "#23272F" }} />
+              <YAxis tick={{ fill: "#9BA3AF", fontSize: 11 }} axisLine={{ stroke: "#23272F" }} />
+              <Tooltip contentStyle={{ background: "#16191F", border: "1px solid #23272F", borderRadius: 12, color: "#F2F4F7" }} />
+              <Bar dataKey="y" fill="#F59E0B" radius={[6, 6, 0, 0]} />
+            </BarChart>
+          ) : chart.chart_type === "line" ? (
+            <LineChart data={data?.points ?? []}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#23272F" />
+              <XAxis dataKey="x" tick={{ fill: "#9BA3AF", fontSize: 11 }} axisLine={{ stroke: "#23272F" }} />
+              <YAxis tick={{ fill: "#9BA3AF", fontSize: 11 }} axisLine={{ stroke: "#23272F" }} />
+              <Tooltip contentStyle={{ background: "#16191F", border: "1px solid #23272F", borderRadius: 12, color: "#F2F4F7" }} />
+              <Line type="monotone" dataKey="y" stroke="#F59E0B" strokeWidth={2} dot={{ fill: "#F59E0B", r: 3 }} />
+            </LineChart>
+          ) : (
+            <PieChart>
+              <Pie data={data?.points ?? []} dataKey="y" nameKey="x" cx="50%" cy="50%" outerRadius={80} label={({ name, percent }: { name: string; percent: number }) => `${name} ${(percent * 100).toFixed(0)}%`}>
+                {(data?.points ?? []).map((_: unknown, idx: number) => (
+                  <Cell key={idx} fill={COLORS[idx % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip contentStyle={{ background: "#16191F", border: "1px solid #23272F", borderRadius: 12, color: "#F2F4F7" }} />
+            </PieChart>
+          )}
+        </ResponsiveContainer>
+      )}
+    </Card>
+  );
+}
