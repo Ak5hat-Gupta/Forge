@@ -1,0 +1,10 @@
+web/
+**/.venv
+**/__pycache__
+**/*.pyc
+**/*.db
+**/.pytest_cache
+.git
+.github
+*.md
+backend/tests
