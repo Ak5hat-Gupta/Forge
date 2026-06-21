@@ -10,6 +10,8 @@ Upload a CSV or Excel file and Forge generates a complete application with authe
 - **Dynamic CRUD** — Full create, read, update, delete with pagination, sorting, and full-text search across JSONB data
 - **Auto-Generated Charts** — Rule-based chart recommendations: line charts for time series, bar charts for categorical data, donut charts for enums, KPI cards for numeric summaries
 - **Type-Aware Forms** — Dynamic form generation that maps each column type to the right input widget
+- **Eject to Code** — Generate and download a complete, standalone Next.js + FastAPI project from your spreadsheet — typed SQLAlchemy models, Pydantic schemas, CRUD API, seed data, and a React UI. No JSONB, no lock-in: real, runnable source.
+- **Public Sharing** — One-click read-only share links (`/share/{token}`) with search, sort, and pagination — no login required for viewers.
 - **CSV/Excel Export** — One-click data export
 - **Auth & Multi-tenancy** — JWT-based authentication with per-user data isolation
 - **REST API** — Full OpenAPI-documented API at `/docs`
@@ -70,6 +72,10 @@ make seed   # Create demo user
 | DELETE | `/api/v1/spreadsheets/{id}/rows/{row_id}` | Delete row |
 | GET | `/api/v1/spreadsheets/{id}/charts/recommend` | Get chart recommendations |
 | GET | `/api/v1/spreadsheets/{id}/charts/data` | Get chart data |
+| GET | `/api/v1/spreadsheets/{id}/eject` | Download generated project (ZIP) |
+| GET | `/api/v1/spreadsheets/{id}/eject/preview` | Preview generated files |
+| POST | `/api/v1/spreadsheets/{id}/share` | Enable/disable public share link |
+| GET | `/api/v1/public/{token}/rows` | Public read-only rows (no auth) |
 
 ## Project Structure
 
@@ -82,7 +88,8 @@ Forge/
 │   │   ├── models/        # SQLAlchemy models
 │   │   ├── repositories/  # Data access layer
 │   │   ├── schemas/       # Pydantic request/response models
-│   │   └── services/      # Business logic (inference, ingestion, charts)
+│   │   ├── services/      # Business logic (inference, ingestion, charts, codegen)
+│   │   └── templates/     # Jinja2 templates for the "eject to code" generator
 │   └── tests/
 ├── web/
 │   └── src/
