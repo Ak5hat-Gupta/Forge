@@ -1,0 +1,25 @@
+from datetime import datetime
+from sqlalchemy import Integer, String, Float, Boolean, DateTime, Date, Text
+from sqlalchemy.orm import Mapped, mapped_column
+
+from database import Base
+
+
+class {{ class_name }}(Base):
+    __tablename__ = "{{ table_name }}"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+{%- for col in columns %}
+    {%- if col.inferred_type == "integer" %}
+    {{ col.slug }}: Mapped[int{% if col.nullable %} | None{% endif %}] = mapped_column(Integer{% if col.nullable %}, nullable=True{% endif %})
+    {%- elif col.inferred_type == "float" or col.inferred_type == "currency" %}
+    {{ col.slug }}: Mapped[float{% if col.nullable %} | None{% endif %}] = mapped_column(Float{% if col.nullable %}, nullable=True{% endif %})
+    {%- elif col.inferred_type == "boolean" %}
+    {{ col.slug }}: Mapped[bool{% if col.nullable %} | None{% endif %}] = mapped_column(Boolean{% if col.nullable %}, nullable=True{% endif %})
+    {%- elif col.inferred_type == "date" %}
+    {{ col.slug }}: Mapped[str{% if col.nullable %} | None{% endif %}] = mapped_column(String(32){% if col.nullable %}, nullable=True{% endif %})
+    {%- else %}
+    {{ col.slug }}: Mapped[str{% if col.nullable %} | None{% endif %}] = mapped_column(Text{% if col.nullable %}, nullable=True{% endif %})
+    {%- endif %}
+{%- endfor %}
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)

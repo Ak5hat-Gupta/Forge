@@ -1,0 +1,31 @@
+# {{ app_name }}
+
+Auto-generated from [Forge](https://github.com/Ak5hat-Gupta/Forge).
+
+## Quick Start
+
+```bash
+# Backend
+cd backend
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+python seed.py
+uvicorn main:app --reload --port 8000
+
+# Frontend
+cd ../web
+npm install
+npm run dev
+```
+
+Then open http://localhost:3000
+
+## API
+
+- `GET /api/{{ resource }}` — list rows
+- `POST /api/{{ resource }}` — create
+- `GET /api/{{ resource }}/{id}` — get one
+- `PUT /api/{{ resource }}/{id}` — update
+- `DELETE /api/{{ resource }}/{id}` — delete
+
+Docs at http://localhost:8000/docs

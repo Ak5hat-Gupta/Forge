@@ -1,0 +1,23 @@
+from database import SessionLocal, init_db
+from models import {{ class_name }}
+
+SEED_DATA = {{ seed_data }}
+
+
+def main():
+    init_db()
+    db = SessionLocal()
+    try:
+        if db.query({{ class_name }}).count() == 0:
+            for row in SEED_DATA:
+                db.add({{ class_name }}(**row))
+            db.commit()
+            print(f"Seeded {len(SEED_DATA)} rows")
+        else:
+            print("Already seeded")
+    finally:
+        db.close()
+
+
+if __name__ == "__main__":
+    main()

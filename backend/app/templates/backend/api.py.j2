@@ -1,0 +1,51 @@
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+
+from database import get_db
+from models import {{ class_name }}
+from schemas import {{ class_name }}Create, {{ class_name }}Out
+
+router = APIRouter(prefix="/{{ resource }}", tags=["{{ resource }}"])
+
+
+@router.get("", response_model=list[{{ class_name }}Out])
+def list_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    return db.query({{ class_name }}).offset(skip).limit(limit).all()
+
+
+@router.post("", response_model={{ class_name }}Out, status_code=201)
+def create_item(payload: {{ class_name }}Create, db: Session = Depends(get_db)):
+    item = {{ class_name }}(**payload.model_dump())
+    db.add(item)
+    db.commit()
+    db.refresh(item)
+    return item
+
+
+@router.get("/{item_id}", response_model={{ class_name }}Out)
+def get_item(item_id: int, db: Session = Depends(get_db)):
+    item = db.get({{ class_name }}, item_id)
+    if not item:
+        raise HTTPException(status_code=404, detail="Not found")
+    return item
+
+
+@router.put("/{item_id}", response_model={{ class_name }}Out)
+def update_item(item_id: int, payload: {{ class_name }}Create, db: Session = Depends(get_db)):
+    item = db.get({{ class_name }}, item_id)
+    if not item:
+        raise HTTPException(status_code=404, detail="Not found")
+    for k, v in payload.model_dump().items():
+        setattr(item, k, v)
+    db.commit()
+    db.refresh(item)
+    return item
+
+
+@router.delete("/{item_id}", status_code=204)
+def delete_item(item_id: int, db: Session = Depends(get_db)):
+    item = db.get({{ class_name }}, item_id)
+    if not item:
+        raise HTTPException(status_code=404, detail="Not found")
+    db.delete(item)
+    db.commit()

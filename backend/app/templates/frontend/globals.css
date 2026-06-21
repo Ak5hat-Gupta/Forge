@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-bg text-ink antialiased;
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+.btn { @apply inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium cursor-pointer transition-colors; }
+.btn-primary { @apply btn bg-brand text-bg hover:opacity-90; }
+.btn-ghost { @apply btn border border-line text-muted hover:border-muted hover:text-ink; }
+.field { @apply w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:border-brand; }
+.lbl { @apply mb-1 block text-xs font-medium uppercase tracking-wide text-muted; }

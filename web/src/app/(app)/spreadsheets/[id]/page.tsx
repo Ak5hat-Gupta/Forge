@@ -2,7 +2,8 @@
 import { useState, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
-import { Search, Plus, Download, X, BarChart3 } from "lucide-react";
+import { Search, Plus, Download, X, BarChart3, Code2, Share2, Check, Copy } from "lucide-react";
+import Link from "next/link";
 import { api, apiErr } from "@/lib/api";
 import { Card, ErrorNote, Spinner, Badge, Empty } from "@/components/ui";
 import { DataTable } from "@/components/data-table";
@@ -23,6 +24,8 @@ export default function SpreadsheetDetail() {
   const [editRow, setEditRow] = useState<DataRow | null>(null);
   const [err, setErr] = useState("");
   const [tab, setTab] = useState<"data" | "charts">("data");
+  const [shareOpen, setShareOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const { data: sheet, isLoading: sheetLoading } = useQuery<Spreadsheet>({
     queryKey: ["spreadsheet", id],
@@ -62,6 +65,20 @@ export default function SpreadsheetDetail() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["rows", id] }),
   });
 
+  const share = useMutation({
+    mutationFn: (enable: boolean) =>
+      api.post(`/spreadsheets/${id}/share?enable=${enable}`).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["spreadsheet", id] }),
+  });
+
+  const shareUrl = sheet?.share_token ? `${typeof window !== "undefined" ? window.location.origin : ""}/share/${sheet.share_token}` : "";
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(shareUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   const handleSort = useCallback((col: string) => {
     if (sortBy === col) { setSortDir((d) => (d === "asc" ? "desc" : "asc")); }
     else { setSortBy(col); setSortDir("asc"); }
@@ -88,12 +105,42 @@ export default function SpreadsheetDetail() {
         </div>
         <div className="flex gap-2">
           <button onClick={() => setTab(tab === "data" ? "charts" : "data")} className="btn-ghost"><BarChart3 size={16} />{tab === "data" ? "Charts" : "Data"}</button>
+          <button onClick={() => setShareOpen(true)} className="btn-ghost"><Share2 size={16} /> Share</button>
+          <Link href={`/spreadsheets/${id}/eject`} className="btn-ghost"><Code2 size={16} /> Eject</Link>
           <button onClick={exportCSV} className="btn-ghost"><Download size={16} /> Export</button>
           <button onClick={() => { setEditRow(null); setShowForm(true); }} className="btn-primary"><Plus size={16} /> Add Row</button>
         </div>
       </div>
 
       <ErrorNote message={err} />
+
+      {shareOpen && (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-black/60 p-4" onClick={() => setShareOpen(false)}>
+          <Card className="w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-sm font-semibold">Share spreadsheet</h3>
+              <button onClick={() => setShareOpen(false)} className="cursor-pointer rounded-lg p-1 text-ink-faint hover:text-ink"><X size={16} /></button>
+            </div>
+            {sheet.share_token ? (
+              <div className="space-y-3">
+                <p className="text-sm text-ink-muted">Anyone with this link can view a read-only copy.</p>
+                <div className="flex items-center gap-2">
+                  <input readOnly value={shareUrl} className="field flex-1 font-mono text-xs" />
+                  <button onClick={copyLink} className="btn-ghost shrink-0">{copied ? <Check size={16} className="text-bull" /> : <Copy size={16} />}</button>
+                </div>
+                <button onClick={() => share.mutate(false)} disabled={share.isPending} className="btn-ghost w-full text-bear">Disable sharing</button>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <p className="text-sm text-ink-muted">Generate a public read-only link for this spreadsheet.</p>
+                <button onClick={() => share.mutate(true)} disabled={share.isPending} className="btn-primary w-full">
+                  {share.isPending ? <Spinner className="h-4 w-4" /> : <><Share2 size={16} /> Create share link</>}
+                </button>
+              </div>
+            )}
+          </Card>
+        </div>
+      )}
 
       {(showForm || editRow) && (
         <Card>

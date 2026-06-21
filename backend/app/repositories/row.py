@@ -85,6 +85,12 @@ class RowRepository(BaseRepository[Row]):
 
         return rows, total
 
+    def list_by_spreadsheet(self, spreadsheet_id: int, limit: int | None = None) -> list[Row]:
+        stmt = select(Row).where(Row.spreadsheet_id == spreadsheet_id).order_by(Row.row_index.asc())
+        if limit:
+            stmt = stmt.limit(limit)
+        return list(self.db.execute(stmt).scalars().all())
+
     def get_max_index(self, spreadsheet_id: int) -> int:
         result = self.db.execute(
             select(func.max(Row.row_index)).where(Row.spreadsheet_id == spreadsheet_id)
