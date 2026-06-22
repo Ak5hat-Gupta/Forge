@@ -6,29 +6,90 @@
 
 body {
   @apply bg-base text-ink font-sans antialiased;
-  background-image: radial-gradient(900px 500px at 85% -10%, rgba(245, 158, 11, 0.08), transparent 60%),
-    radial-gradient(700px 400px at -5% 5%, rgba(59, 130, 246, 0.06), transparent 55%);
-  background-attachment: fixed;
+  position: relative;
+  min-height: 100vh;
+}
+
+/* Animated aurora mesh — the "alive" background */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -20%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(40% 38% at 12% 8%, rgba(168, 85, 247, 0.30), transparent 60%),
+    radial-gradient(38% 36% at 88% 0%, rgba(245, 158, 11, 0.22), transparent 60%),
+    radial-gradient(45% 45% at 78% 82%, rgba(34, 211, 238, 0.22), transparent 60%),
+    radial-gradient(40% 40% at 20% 92%, rgba(236, 72, 153, 0.22), transparent 60%);
+  filter: saturate(1.25);
+  animation: aurora 16s ease-in-out infinite;
+}
+/* Subtle grid texture over the aurora */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(circle at 50% 35%, black, transparent 85%);
 }
 
 .nums { font-variant-numeric: tabular-nums; @apply font-mono; }
 
-*:focus-visible { @apply outline-none ring-2 ring-brand/60 ring-offset-2 ring-offset-base; }
+*:focus-visible { @apply outline-none ring-2 ring-violet/70 ring-offset-2 ring-offset-base; }
 
-::-webkit-scrollbar { width: 9px; height: 9px; }
-::-webkit-scrollbar-thumb { @apply rounded-full bg-line; }
-::-webkit-scrollbar-thumb:hover { @apply bg-ink-faint; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { @apply rounded-full; background: linear-gradient(180deg, #A855F7, #6366F1); }
+::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #EC4899, #A855F7); }
+::-webkit-scrollbar-track { background: transparent; }
+
+::selection { background: rgba(168, 85, 247, 0.35); color: #fff; }
 
 @layer components {
-  .glass { @apply rounded-2xl border border-line bg-surface-raised/70 backdrop-blur-xl shadow-glass; }
-  .btn { @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed; }
-  .btn-primary { @apply btn bg-brand text-base font-semibold hover:bg-brand-600; }
-  .btn-ghost { @apply btn border border-line bg-surface/40 text-ink-muted hover:border-ink-faint hover:text-ink; }
-  .field { @apply w-full rounded-xl border border-line bg-surface/60 px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint transition-colors focus:border-brand/60 focus:bg-surface; }
-  .lbl { @apply mb-1.5 block text-xs font-medium uppercase tracking-wide text-ink-muted; }
-  .chip { @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium; }
+  /* Glass cards with gradient hairline border + depth */
+  .glass {
+    @apply relative rounded-2xl backdrop-blur-xl shadow-glass;
+    border: 1px solid transparent;
+    background:
+      linear-gradient(#13101fd9, #13101fd9) padding-box,
+      linear-gradient(135deg, rgba(168, 85, 247, 0.6), rgba(34, 211, 238, 0.3) 45%, rgba(236, 72, 153, 0.5)) border-box;
+  }
+
+  .btn { @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed; }
+  .btn-primary {
+    @apply btn text-white shadow-[0_8px_30px_-8px_rgba(236,72,153,0.6)];
+    background-image: linear-gradient(100deg, #F59E0B, #EC4899 55%, #A855F7);
+    background-size: 160% 160%;
+  }
+  .btn-primary:hover { @apply -translate-y-0.5; background-position: 100% 50%; box-shadow: 0 12px 40px -8px rgba(168, 85, 247, 0.7); }
+  .btn-ghost { @apply btn border border-line bg-surface/40 text-ink-muted hover:border-violet/60 hover:text-ink hover:bg-surface-overlay/50; }
+
+  .field { @apply w-full rounded-xl border border-line bg-surface/60 px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint transition-all duration-200 focus:border-violet/70 focus:bg-surface focus:shadow-[0_0_0_3px_rgba(168,85,247,0.18)]; }
+  .lbl { @apply mb-1.5 block text-xs font-medium uppercase tracking-wider text-ink-muted; }
+  .chip { @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold; }
+
+  /* Gradient text */
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(100deg, #F59E0B, #EC4899 50%, #A855F7);
+  }
+  .text-gradient-cool {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(100deg, #22D3EE, #6366F1 55%, #A855F7);
+  }
+  .text-shimmer {
+    @apply bg-clip-text text-transparent animate-shimmer;
+    background-image: linear-gradient(100deg, #F59E0B, #EC4899, #A855F7, #22D3EE, #F59E0B);
+    background-size: 200% auto;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  body::before { animation: none; }
   *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
 }

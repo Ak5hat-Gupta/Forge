@@ -43,7 +43,7 @@ export default function Spreadsheets() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-2xl font-bold">Spreadsheets</h2>
+        <h2 className="text-3xl font-bold font-display">Spreadsheets</h2>
         <p className="text-sm text-ink-muted">Upload and manage your data</p>
       </div>
 

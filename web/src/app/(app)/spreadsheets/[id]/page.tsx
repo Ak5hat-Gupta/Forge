@@ -11,7 +11,7 @@ import { DynamicForm } from "@/components/dynamic-form";
 import type { Spreadsheet, PaginatedRows, DataRow, ChartRecommendation } from "@/lib/types";
 import { ResponsiveContainer, BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 
-const COLORS = ["#F59E0B", "#3B82F6", "#10B981", "#F43F5E", "#8B5CF6", "#EC4899", "#14B8A6", "#F97316"];
+const COLORS = ["#A855F7", "#22D3EE", "#EC4899", "#F59E0B", "#34E5B0", "#6366F1", "#FB5577", "#38BDF8"];
 
 export default function SpreadsheetDetail() {
   const { id } = useParams<{ id: string }>();
@@ -97,7 +97,7 @@ export default function SpreadsheetDetail() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold">{sheet.name}</h2>
+          <h2 className="text-3xl font-bold font-display">{sheet.name}</h2>
           <p className="flex items-center gap-2 text-sm text-ink-muted">
             <Badge label={sheet.status} tone={sheet.status === "ready" ? "bull" : "warn"} />
             {sheet.row_count} rows · {cols.length} columns
@@ -224,35 +224,48 @@ function ChartCard({ spreadsheetId, chart }: { spreadsheetId: string; chart: Cha
         <div className="grid h-52 place-items-center"><Spinner className="h-5 w-5 text-brand" /></div>
       ) : chart.chart_type === "kpi" ? (
         <div className="text-center">
-          <div className="text-4xl font-bold nums text-brand">{data?.value?.toLocaleString?.() ?? data?.value}</div>
+          <div className="text-5xl font-bold font-display nums text-gradient">{data?.value?.toLocaleString?.() ?? data?.value}</div>
           {data?.label && <div className="mt-1 text-xs text-ink-muted">{data.label}</div>}
         </div>
       ) : (
         <ResponsiveContainer width="100%" height={220}>
           {chart.chart_type === "bar" ? (
             <BarChart data={data?.points ?? []}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#23272F" />
-              <XAxis dataKey="x" tick={{ fill: "#9BA3AF", fontSize: 11 }} axisLine={{ stroke: "#23272F" }} />
-              <YAxis tick={{ fill: "#9BA3AF", fontSize: 11 }} axisLine={{ stroke: "#23272F" }} />
-              <Tooltip contentStyle={{ background: "#16191F", border: "1px solid #23272F", borderRadius: 12, color: "#F2F4F7" }} />
-              <Bar dataKey="y" fill="#F59E0B" radius={[6, 6, 0, 0]} />
+              <defs>
+                <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#A855F7" />
+                  <stop offset="100%" stopColor="#22D3EE" />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="#2C2750" />
+              <XAxis dataKey="x" tick={{ fill: "#AEA9D4", fontSize: 11 }} axisLine={{ stroke: "#2C2750" }} />
+              <YAxis tick={{ fill: "#AEA9D4", fontSize: 11 }} axisLine={{ stroke: "#2C2750" }} />
+              <Tooltip cursor={{ fill: "rgba(168,85,247,0.08)" }} contentStyle={{ background: "#181530", border: "1px solid #2C2750", borderRadius: 12, color: "#F3F1FF" }} />
+              <Bar dataKey="y" fill="url(#barGrad)" radius={[8, 8, 0, 0]} />
             </BarChart>
           ) : chart.chart_type === "line" ? (
             <LineChart data={data?.points ?? []}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#23272F" />
-              <XAxis dataKey="x" tick={{ fill: "#9BA3AF", fontSize: 11 }} axisLine={{ stroke: "#23272F" }} />
-              <YAxis tick={{ fill: "#9BA3AF", fontSize: 11 }} axisLine={{ stroke: "#23272F" }} />
-              <Tooltip contentStyle={{ background: "#16191F", border: "1px solid #23272F", borderRadius: 12, color: "#F2F4F7" }} />
-              <Line type="monotone" dataKey="y" stroke="#F59E0B" strokeWidth={2} dot={{ fill: "#F59E0B", r: 3 }} />
+              <defs>
+                <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="#22D3EE" />
+                  <stop offset="50%" stopColor="#A855F7" />
+                  <stop offset="100%" stopColor="#EC4899" />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="#2C2750" />
+              <XAxis dataKey="x" tick={{ fill: "#AEA9D4", fontSize: 11 }} axisLine={{ stroke: "#2C2750" }} />
+              <YAxis tick={{ fill: "#AEA9D4", fontSize: 11 }} axisLine={{ stroke: "#2C2750" }} />
+              <Tooltip contentStyle={{ background: "#181530", border: "1px solid #2C2750", borderRadius: 12, color: "#F3F1FF" }} />
+              <Line type="monotone" dataKey="y" stroke="url(#lineGrad)" strokeWidth={3} dot={{ fill: "#A855F7", r: 3 }} activeDot={{ r: 5, fill: "#EC4899" }} />
             </LineChart>
           ) : (
             <PieChart>
-              <Pie data={data?.points ?? []} dataKey="y" nameKey="x" cx="50%" cy="50%" outerRadius={80} label={({ name, percent }: { name: string; percent: number }) => `${name} ${(percent * 100).toFixed(0)}%`}>
+              <Pie data={data?.points ?? []} dataKey="y" nameKey="x" cx="50%" cy="50%" innerRadius={48} outerRadius={82} paddingAngle={3} stroke="#110F1F" strokeWidth={2} label={({ name, percent }: { name: string; percent: number }) => `${name} ${(percent * 100).toFixed(0)}%`}>
                 {(data?.points ?? []).map((_: unknown, idx: number) => (
                   <Cell key={idx} fill={COLORS[idx % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip contentStyle={{ background: "#16191F", border: "1px solid #23272F", borderRadius: 12, color: "#F2F4F7" }} />
+              <Tooltip contentStyle={{ background: "#181530", border: "1px solid #2C2750", borderRadius: 12, color: "#F3F1FF" }} />
             </PieChart>
           )}
         </ResponsiveContainer>

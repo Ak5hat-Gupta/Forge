@@ -23,16 +23,16 @@ export default function Dashboard() {
     <div className="space-y-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold">Dashboard</h2>
+          <h2 className="text-3xl font-bold font-display">Dashboard</h2>
           <p className="text-sm text-ink-muted">Your spreadsheet apps at a glance</p>
         </div>
         <Link href="/spreadsheets" className="btn-primary"><Upload size={16} /> Upload Spreadsheet</Link>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <Stat label="Total Apps" value={list.length} sub={<span className="flex items-center gap-1"><FileSpreadsheet size={12} /> Spreadsheets uploaded</span>} />
-        <Stat label="Total Rows" value={totalRows.toLocaleString()} sub="Across all spreadsheets" />
-        <Stat label="Latest Upload" value={recent[0] ? ago(recent[0].created_at) : "—"} sub={recent[0]?.name ?? "No uploads yet"} />
+        <Stat label="Total Apps" value={list.length} accent="violet" icon={<FileSpreadsheet size={18} />} sub="Spreadsheets uploaded" />
+        <Stat label="Total Rows" value={totalRows.toLocaleString()} accent="cyan" icon={<Table2 size={18} />} sub="Across all spreadsheets" />
+        <Stat label="Latest Upload" value={recent[0] ? ago(recent[0].created_at) : "—"} accent="magenta" icon={<Clock size={18} />} sub={recent[0]?.name ?? "No uploads yet"} />
       </div>
 
       {recent.length === 0 ? (

@@ -29,15 +29,17 @@ export function UploadZone({ onFile, loading }: Props) {
     <div
       {...getRootProps()}
       className={cn(
-        "flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed px-6 py-12 text-center transition-colors",
+        "flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed px-6 py-14 text-center transition-all duration-200",
         isDragActive
-          ? "border-brand bg-brand/5"
-          : "border-line bg-surface/30 hover:border-ink-faint hover:bg-surface/50",
+          ? "border-violet bg-violet/10 shadow-glow-violet"
+          : "border-line bg-surface/30 hover:border-violet/60 hover:bg-surface/50",
         loading && "pointer-events-none opacity-50"
       )}
     >
       <input {...getInputProps()} />
-      <Upload size={32} className="mb-3 text-ink-faint" />
+      <span className="mb-3 grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-violet via-magenta to-cyan text-white shadow-[0_8px_30px_-8px_rgba(168,85,247,0.7)]">
+        <Upload size={26} />
+      </span>
       <p className="text-sm font-medium">
         {isDragActive ? "Drop your file here" : "Drag & drop a CSV or Excel file"}
       </p>
