@@ -50,6 +50,9 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins_list,
+    # Always allow this project's Vercel deployments (production + previews),
+    # independent of the CORS_ORIGINS env var.
+    allow_origin_regex=r"https://forge-[a-z0-9-]+\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

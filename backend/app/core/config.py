@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     database_url: str = "sqlite:///./forge.db"
     redis_url: str = ""
 
-    cors_origins: str = "http://localhost:3000,http://localhost:5173"
+    cors_origins: str = "http://localhost:3000,http://localhost:5173,https://forge-opal-one.vercel.app"
 
     @property
     def cors_origins_list(self) -> List[str]:
