@@ -35,7 +35,7 @@ export default function EjectPage() {
     URL.revokeObjectURL(url);
   };
 
-  if (isLoading) return <div className="grid min-h-[60vh] place-items-center"><Spinner className="h-8 w-8 text-brand" /></div>;
+  if (isLoading) return <div className="grid min-h-[60vh] place-items-center"><Spinner className="h-8 w-8 text-violet" /></div>;
   if (!data) return null;
 
   const current = data.files.find((f) => f.path === selected);
@@ -99,7 +99,7 @@ function FileTree({ title, files, selected, onSelect }: { title: string; files: 
             onClick={() => onSelect(f.path)}
             className={`flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-xs font-mono transition-colors cursor-pointer ${
               selected === f.path
-                ? "bg-brand/15 text-brand"
+                ? "bg-violet/15 text-violet"
                 : "text-ink-muted hover:bg-surface-overlay/60 hover:text-ink"
             }`}
           >

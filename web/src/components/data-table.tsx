@@ -47,7 +47,7 @@ export function DataTable({ columns, rows, total, page, pages, sortBy, sortDir, 
                 >
                   <button onClick={() => onSort(col.slug)} className="inline-flex cursor-pointer items-center gap-1 hover:text-ink">
                     {col.name}
-                    <ArrowUpDown size={12} className={sortBy === col.slug ? "text-brand" : "text-ink-faint"} />
+                    <ArrowUpDown size={12} className={sortBy === col.slug ? "text-violet" : "text-ink-faint"} />
                   </button>
                 </th>
               ))}

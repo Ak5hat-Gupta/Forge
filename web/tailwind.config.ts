@@ -10,18 +10,19 @@ export default {
         base: "#F4F2FC",
         surface: { DEFAULT: "#FFFFFF", raised: "#FFFFFF", overlay: "#F1ECFB" },
         line: "#E4DEF5",
-        ink: { DEFAULT: "#1B1638", muted: "#5C5685", faint: "#938DB6" },
-        // Vivid accents tuned for contrast on white
-        brand: { DEFAULT: "#F59E0B", 600: "#D97706" },
+        ink: { DEFAULT: "#1B1638", muted: "#4F4A72", faint: "#6A6491" },
+        // Accents used as TEXT — all ≥4.5:1 on white. (Chart fills use brighter
+        // hexes inline, so visualizations stay vivid.)
+        brand: { DEFAULT: "#F59E0B", 600: "#B45309" },
         violet: { DEFAULT: "#7C3AED", 600: "#6D28D9" },
         indigo: { DEFAULT: "#4F46E5", 600: "#4338CA" },
-        cyan: { DEFAULT: "#0891B2", 600: "#0E7490" },
-        magenta: { DEFAULT: "#DB2777", 600: "#BE185D" },
-        // Semantic (readable on light)
-        bull: { DEFAULT: "#059669", soft: "rgba(5,150,105,0.12)" },
-        bear: { DEFAULT: "#E11D48", soft: "rgba(225,29,72,0.12)" },
-        warn: { DEFAULT: "#D97706", soft: "rgba(217,119,6,0.14)" },
-        info: { DEFAULT: "#2563EB", soft: "rgba(37,99,235,0.12)" },
+        cyan: { DEFAULT: "#0E7490", 600: "#155E75" },
+        magenta: { DEFAULT: "#BE185D", 600: "#9D174D" },
+        // Semantic (deepened for readable text on white)
+        bull: { DEFAULT: "#047857", soft: "rgba(4,120,87,0.12)" },
+        bear: { DEFAULT: "#BE123C", soft: "rgba(190,18,60,0.12)" },
+        warn: { DEFAULT: "#B45309", soft: "rgba(180,83,9,0.14)" },
+        info: { DEFAULT: "#1D4ED8", soft: "rgba(29,78,216,0.12)" },
       },
       fontFamily: {
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],

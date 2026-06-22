@@ -105,7 +105,7 @@ export default function SpreadsheetDetail() {
     window.open(`${api.defaults.baseURL}/spreadsheets/${id}/rows/export?format=csv`, "_blank");
   };
 
-  if (sheetLoading) return <div className="grid min-h-[60vh] place-items-center"><Spinner className="h-8 w-8 text-brand" /></div>;
+  if (sheetLoading) return <div className="grid min-h-[60vh] place-items-center"><Spinner className="h-8 w-8 text-violet" /></div>;
   if (!sheet) return <Empty title="Spreadsheet not found" />;
 
   const cols = sheet.columns.sort((a, b) => a.position - b.position);
@@ -189,7 +189,7 @@ export default function SpreadsheetDetail() {
           </div>
 
           {rowsLoading ? (
-            <div className="grid min-h-[40vh] place-items-center"><Spinner className="h-6 w-6 text-brand" /></div>
+            <div className="grid min-h-[40vh] place-items-center"><Spinner className="h-6 w-6 text-violet" /></div>
           ) : rowsData ? (
             <DataTable
               columns={cols}
@@ -238,7 +238,7 @@ function ChartCard({ spreadsheetId, chart }: { spreadsheetId: string; chart: Cha
     <Card>
       <h3 className="mb-4 text-sm font-semibold">{chart.title}</h3>
       {isLoading ? (
-        <div className="grid h-52 place-items-center"><Spinner className="h-5 w-5 text-brand" /></div>
+        <div className="grid h-52 place-items-center"><Spinner className="h-5 w-5 text-violet" /></div>
       ) : chart.chart_type === "kpi" ? (
         <div className="text-center">
           <div className="text-5xl font-bold font-display nums text-gradient">{data?.value?.toLocaleString?.() ?? data?.value}</div>

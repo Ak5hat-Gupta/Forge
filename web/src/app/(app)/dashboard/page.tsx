@@ -13,7 +13,7 @@ export default function Dashboard() {
     queryFn: () => api.get("/spreadsheets").then((r) => r.data),
   });
 
-  if (isLoading) return <div className="grid min-h-[60vh] place-items-center"><Spinner className="h-8 w-8 text-brand" /></div>;
+  if (isLoading) return <div className="grid min-h-[60vh] place-items-center"><Spinner className="h-8 w-8 text-violet" /></div>;
 
   const list = sheets ?? [];
   const recent = list.slice(0, 5);
@@ -49,7 +49,7 @@ export default function Dashboard() {
             {recent.map((s) => (
               <Link key={s.id} href={`/spreadsheets/${s.id}`} className="flex items-center justify-between rounded-xl px-4 py-3 transition-colors hover:bg-surface-overlay/60">
                 <div className="flex items-center gap-3">
-                  <FileSpreadsheet size={18} className="text-brand" />
+                  <FileSpreadsheet size={18} className="text-violet" />
                   <div><div className="text-sm font-medium">{s.name}</div><div className="text-xs text-ink-faint">{s.row_count} rows</div></div>
                 </div>
                 <div className="flex items-center gap-3">

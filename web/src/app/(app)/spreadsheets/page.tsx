@@ -36,7 +36,7 @@ export default function Spreadsheets() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["spreadsheets"] }),
   });
 
-  if (isLoading) return <div className="grid min-h-[60vh] place-items-center"><Spinner className="h-8 w-8 text-brand" /></div>;
+  if (isLoading) return <div className="grid min-h-[60vh] place-items-center"><Spinner className="h-8 w-8 text-violet" /></div>;
 
   const list = sheets ?? [];
 
@@ -57,7 +57,7 @@ export default function Spreadsheets() {
           {list.map((s) => (
             <div key={s.id} className="flex items-center justify-between rounded-xl border border-line bg-surface-raised/50 px-4 py-3 transition-colors hover:bg-surface-overlay/60">
               <Link href={`/spreadsheets/${s.id}`} className="flex min-w-0 flex-1 items-center gap-3">
-                <FileSpreadsheet size={18} className="shrink-0 text-brand" />
+                <FileSpreadsheet size={18} className="shrink-0 text-violet" />
                 <div className="min-w-0"><div className="truncate text-sm font-medium">{s.name}</div><div className="text-xs text-ink-faint">{s.row_count} rows</div></div>
               </Link>
               <div className="flex items-center gap-3">

@@ -54,7 +54,7 @@ export default function Login() {
             {[
               { icon: Table2, label: "Smart tables", c: "text-cyan border-cyan/40 bg-cyan/10" },
               { icon: BarChart3, label: "Auto charts", c: "text-magenta border-magenta/40 bg-magenta/10" },
-              { icon: Code2, label: "Eject to code", c: "text-brand border-brand/40 bg-brand/10" },
+              { icon: Code2, label: "Eject to code", c: "text-indigo border-indigo/40 bg-indigo/10" },
             ].map((f) => (
               <span key={f.label} className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium ${f.c}`}>
                 <f.icon size={13} /> {f.label}

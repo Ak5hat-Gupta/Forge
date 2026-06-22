@@ -46,18 +46,18 @@ export default function SharePage() {
     <div className="min-h-screen">
       <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-line bg-base/70 px-4 backdrop-blur-xl lg:px-8">
         <div className="flex items-center gap-2.5">
-          <span className="grid h-9 w-9 place-items-center rounded-xl bg-brand/15 text-brand"><Hammer size={20} /></span>
+          <span className="grid h-9 w-9 place-items-center rounded-xl bg-violet/15 text-violet"><Hammer size={20} /></span>
           <div className="leading-tight">
             <div className="text-sm font-semibold">{data?.name ?? "Shared Spreadsheet"}</div>
             <div className="text-[11px] text-ink-faint">Public view · Forge</div>
           </div>
         </div>
-        <a href="https://github.com/Ak5hat-Gupta/Forge" target="_blank" rel="noopener noreferrer" className="chip bg-surface-overlay text-ink-muted hover:text-brand">Made with Forge</a>
+        <a href="https://github.com/Ak5hat-Gupta/Forge" target="_blank" rel="noopener noreferrer" className="chip bg-surface-overlay text-ink-muted hover:text-violet">Made with Forge</a>
       </header>
 
       <main className="mx-auto w-full max-w-7xl p-4 lg:p-8">
         {isLoading ? (
-          <div className="grid min-h-[50vh] place-items-center"><Spinner className="h-8 w-8 text-brand" /></div>
+          <div className="grid min-h-[50vh] place-items-center"><Spinner className="h-8 w-8 text-violet" /></div>
         ) : isError || !data ? (
           <Empty title="Not available" desc="This shared link is invalid or has been disabled." />
         ) : (
@@ -92,7 +92,7 @@ export default function SharePage() {
       </main>
 
       <footer className="border-t border-line px-4 py-4 text-center lg:px-8">
-        <a href="https://github.com/Ak5hat-Gupta" target="_blank" rel="noopener noreferrer" className="font-mono text-[11px] tracking-wide text-ink-faint hover:text-brand">
+        <a href="https://github.com/Ak5hat-Gupta" target="_blank" rel="noopener noreferrer" className="font-mono text-[11px] tracking-wide text-ink-faint hover:text-violet">
           Built by Akshat Gupta
         </a>
       </footer>
