@@ -44,7 +44,7 @@ export default function SharePage() {
 
   return (
     <div className="min-h-screen">
-      <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-line bg-base/70 px-4 backdrop-blur-xl lg:px-8">
+      <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-line bg-canvas/70 px-4 backdrop-blur-xl lg:px-8">
         <div className="flex items-center gap-2.5">
           <span className="grid h-9 w-9 place-items-center rounded-xl bg-violet/15 text-violet"><Hammer size={20} /></span>
           <div className="leading-tight">

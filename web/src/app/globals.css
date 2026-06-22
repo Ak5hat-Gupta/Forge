@@ -5,7 +5,7 @@
 :root { color-scheme: light; }
 
 body {
-  @apply bg-base text-ink font-sans antialiased;
+  @apply bg-canvas text-ink font-sans antialiased;
   position: relative;
   min-height: 100vh;
 }
@@ -41,7 +41,7 @@ body::after {
 
 .nums { font-variant-numeric: tabular-nums; @apply font-mono; }
 
-*:focus-visible { @apply outline-none ring-2 ring-violet/60 ring-offset-2 ring-offset-base; }
+*:focus-visible { @apply outline-none ring-2 ring-violet/60 ring-offset-2 ring-offset-canvas; }
 
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-thumb { @apply rounded-full; background: linear-gradient(180deg, #7C3AED, #6366F1); }

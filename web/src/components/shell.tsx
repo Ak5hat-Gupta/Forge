@@ -67,7 +67,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {open && <div className="fixed inset-0 z-30 bg-black/60 lg:hidden" onClick={() => setOpen(false)} />}
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-3 border-b border-line bg-base/60 px-4 backdrop-blur-2xl lg:px-8">
+        <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-3 border-b border-line bg-canvas/60 px-4 backdrop-blur-2xl lg:px-8">
           <div className="flex items-center gap-3">
             <button className="cursor-pointer rounded-lg p-2 text-ink-muted hover:bg-surface-overlay/60 lg:hidden" onClick={() => setOpen((v) => !v)} aria-label="Menu">{open ? <X size={20} /> : <Menu size={20} />}</button>
             <h1 className="text-lg font-bold font-display">{active?.label ?? "Forge"}</h1>

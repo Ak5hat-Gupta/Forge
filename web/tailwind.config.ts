@@ -7,7 +7,7 @@ export default {
     extend: {
       colors: {
         // Bright, airy light canvas with a faint lavender tint
-        base: "#F4F2FC",
+        canvas: "#F4F2FC",
         surface: { DEFAULT: "#FFFFFF", raised: "#FFFFFF", overlay: "#F1ECFB" },
         line: "#E4DEF5",
         ink: { DEFAULT: "#1B1638", muted: "#4F4A72", faint: "#6A6491" },
