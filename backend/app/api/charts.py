@@ -57,18 +57,26 @@ def get_chart_data(
                 nums.append(float(v))
             except (ValueError, TypeError):
                 continue
+        count = len(nums)
+        total = round(sum(nums), 2) if nums else 0
+        mean = round(sum(nums) / count, 2) if nums else 0
+        lo = round(min(nums), 2) if nums else 0
+        hi = round(max(nums), 2) if nums else 0
         return {
             "chart_type": "kpi",
             "column": y_column,
-            "count": len(nums),
-            "sum": round(sum(nums), 2) if nums else 0,
-            "mean": round(sum(nums) / len(nums), 2) if nums else 0,
-            "min": min(nums) if nums else 0,
-            "max": max(nums) if nums else 0,
+            # `value` + `label` are what the dashboard card renders.
+            "value": mean,
+            "label": f"average · range {lo:,g}–{hi:,g} · n={count}",
+            "count": count,
+            "sum": total,
+            "mean": mean,
+            "min": lo,
+            "max": hi,
         }
 
     if chart_type in ("bar", "line") and x_column and y_column:
-        data_points: list[dict[str, Any]] = []
+        points: list[dict[str, Any]] = []
         agg: dict[str, list[float]] = {}
         for r in rows:
             x_val = r.data.get(x_column)
@@ -83,20 +91,23 @@ def get_chart_data(
             agg.setdefault(key, []).append(y_num)
 
         for k, vals in agg.items():
-            data_points.append({"x": k, "y": round(sum(vals) / len(vals), 2)})
+            points.append({"x": k, "y": round(sum(vals) / len(vals), 2)})
 
         if chart_type == "line":
-            data_points.sort(key=lambda d: d["x"])
+            points.sort(key=lambda d: d["x"])
+        else:
+            points.sort(key=lambda d: d["y"], reverse=True)
 
-        return {"chart_type": chart_type, "x_column": x_column, "y_column": y_column, "data": data_points}
+        return {"chart_type": chart_type, "x_column": x_column, "y_column": y_column, "points": points}
 
     if chart_type == "donut" and x_column:
         values = [str(r.data.get(x_column)) for r in rows if r.data.get(x_column) is not None]
         counts = Counter(values).most_common(10)
+        # Dashboard donut reads points[].x (label) and points[].y (value).
         return {
             "chart_type": "donut",
             "column": x_column,
-            "data": [{"label": k, "value": v} for k, v in counts],
+            "points": [{"x": k, "y": v} for k, v in counts],
         }
 
-    return {"chart_type": chart_type, "data": []}
+    return {"chart_type": chart_type, "points": []}
