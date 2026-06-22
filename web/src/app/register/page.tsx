@@ -32,13 +32,13 @@ export default function Register() {
 
   return (
     <div className="flex min-h-screen items-center justify-center p-6">
-      <div className="w-full max-w-sm space-y-6">
+      <div className="glass w-full max-w-sm space-y-6 p-8">
         <div className="flex items-center gap-2.5">
-          <span className="grid h-9 w-9 place-items-center rounded-xl bg-brand/15 text-brand"><Hammer size={20} /></span>
-          <span className="text-lg font-bold">Forge</span>
+          <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-brand via-magenta to-violet text-white shadow-[0_4px_20px_-4px_rgba(219,39,119,0.6)]"><Hammer size={20} /></span>
+          <span className="text-lg font-bold font-display text-gradient">Forge</span>
         </div>
         <div>
-          <h1 className="text-2xl font-bold">Create account</h1>
+          <h1 className="text-2xl font-bold font-display">Create account</h1>
           <p className="mt-1 text-sm text-ink-muted">Get started with Forge</p>
         </div>
         <ErrorNote message={error} />
@@ -50,7 +50,7 @@ export default function Register() {
         </form>
         <p className="text-center text-sm text-ink-muted">
           Already have an account?{" "}
-          <Link href="/login" className="font-medium text-brand hover:underline">Sign in</Link>
+          <Link href="/login" className="font-semibold text-violet hover:text-magenta transition-colors">Sign in</Link>
         </p>
       </div>
     </div>

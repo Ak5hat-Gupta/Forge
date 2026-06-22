@@ -11,7 +11,24 @@ import { DynamicForm } from "@/components/dynamic-form";
 import type { Spreadsheet, PaginatedRows, DataRow, ChartRecommendation } from "@/lib/types";
 import { ResponsiveContainer, BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 
-const COLORS = ["#A855F7", "#22D3EE", "#EC4899", "#F59E0B", "#34E5B0", "#6366F1", "#FB5577", "#38BDF8"];
+const COLORS = ["#7C3AED", "#06B6D4", "#DB2777", "#F59E0B", "#10B981", "#6366F1", "#F43F5E", "#0EA5E9"];
+
+const TOOLTIP_STYLE = { background: "#FFFFFF", border: "1px solid #E4DEF5", borderRadius: 12, color: "#1B1638", boxShadow: "0 12px 32px -12px rgba(76,29,149,0.25)" } as const;
+const TOOLTIP_ITEM = { color: "#1B1638" } as const;
+const TOOLTIP_LABEL = { color: "#5C5685", fontWeight: 600 } as const;
+
+const PIE_RAD = Math.PI / 180;
+// Dark, readable labels placed just outside the donut.
+function renderPieLabel({ cx, cy, midAngle, outerRadius, percent, name }: any) {
+  const r = outerRadius + 16;
+  const x = cx + r * Math.cos(-midAngle * PIE_RAD);
+  const y = cy + r * Math.sin(-midAngle * PIE_RAD);
+  return (
+    <text x={x} y={y} fill="#1B1638" fontSize={11} fontWeight={600} textAnchor={x >= cx ? "start" : "end"} dominantBaseline="central">
+      {`${name} ${(percent * 100).toFixed(0)}%`}
+    </text>
+  );
+}
 
 export default function SpreadsheetDetail() {
   const { id } = useParams<{ id: string }>();
@@ -233,39 +250,39 @@ function ChartCard({ spreadsheetId, chart }: { spreadsheetId: string; chart: Cha
             <BarChart data={data?.points ?? []}>
               <defs>
                 <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#A855F7" />
-                  <stop offset="100%" stopColor="#22D3EE" />
+                  <stop offset="0%" stopColor="#7C3AED" />
+                  <stop offset="100%" stopColor="#06B6D4" />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#2C2750" />
-              <XAxis dataKey="x" tick={{ fill: "#AEA9D4", fontSize: 11 }} axisLine={{ stroke: "#2C2750" }} />
-              <YAxis tick={{ fill: "#AEA9D4", fontSize: 11 }} axisLine={{ stroke: "#2C2750" }} />
-              <Tooltip cursor={{ fill: "rgba(168,85,247,0.08)" }} contentStyle={{ background: "#181530", border: "1px solid #2C2750", borderRadius: 12, color: "#F3F1FF" }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#E4DEF5" />
+              <XAxis dataKey="x" tick={{ fill: "#5C5685", fontSize: 11 }} axisLine={{ stroke: "#E4DEF5" }} />
+              <YAxis tick={{ fill: "#5C5685", fontSize: 11 }} axisLine={{ stroke: "#E4DEF5" }} />
+              <Tooltip cursor={{ fill: "rgba(124,58,237,0.08)" }} contentStyle={TOOLTIP_STYLE} itemStyle={TOOLTIP_ITEM} labelStyle={TOOLTIP_LABEL} />
               <Bar dataKey="y" fill="url(#barGrad)" radius={[8, 8, 0, 0]} />
             </BarChart>
           ) : chart.chart_type === "line" ? (
             <LineChart data={data?.points ?? []}>
               <defs>
                 <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor="#22D3EE" />
-                  <stop offset="50%" stopColor="#A855F7" />
-                  <stop offset="100%" stopColor="#EC4899" />
+                  <stop offset="0%" stopColor="#06B6D4" />
+                  <stop offset="50%" stopColor="#7C3AED" />
+                  <stop offset="100%" stopColor="#DB2777" />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#2C2750" />
-              <XAxis dataKey="x" tick={{ fill: "#AEA9D4", fontSize: 11 }} axisLine={{ stroke: "#2C2750" }} />
-              <YAxis tick={{ fill: "#AEA9D4", fontSize: 11 }} axisLine={{ stroke: "#2C2750" }} />
-              <Tooltip contentStyle={{ background: "#181530", border: "1px solid #2C2750", borderRadius: 12, color: "#F3F1FF" }} />
-              <Line type="monotone" dataKey="y" stroke="url(#lineGrad)" strokeWidth={3} dot={{ fill: "#A855F7", r: 3 }} activeDot={{ r: 5, fill: "#EC4899" }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#E4DEF5" />
+              <XAxis dataKey="x" tick={{ fill: "#5C5685", fontSize: 11 }} axisLine={{ stroke: "#E4DEF5" }} />
+              <YAxis tick={{ fill: "#5C5685", fontSize: 11 }} axisLine={{ stroke: "#E4DEF5" }} />
+              <Tooltip contentStyle={TOOLTIP_STYLE} itemStyle={TOOLTIP_ITEM} labelStyle={TOOLTIP_LABEL} />
+              <Line type="monotone" dataKey="y" stroke="url(#lineGrad)" strokeWidth={3} dot={{ fill: "#7C3AED", r: 3 }} activeDot={{ r: 5, fill: "#DB2777" }} />
             </LineChart>
           ) : (
             <PieChart>
-              <Pie data={data?.points ?? []} dataKey="y" nameKey="x" cx="50%" cy="50%" innerRadius={48} outerRadius={82} paddingAngle={3} stroke="#110F1F" strokeWidth={2} label={({ name, percent }: { name: string; percent: number }) => `${name} ${(percent * 100).toFixed(0)}%`}>
+              <Pie data={data?.points ?? []} dataKey="y" nameKey="x" cx="50%" cy="50%" innerRadius={46} outerRadius={78} paddingAngle={3} stroke="#FFFFFF" strokeWidth={3} label={renderPieLabel}>
                 {(data?.points ?? []).map((_: unknown, idx: number) => (
                   <Cell key={idx} fill={COLORS[idx % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip contentStyle={{ background: "#181530", border: "1px solid #2C2750", borderRadius: 12, color: "#F3F1FF" }} />
+              <Tooltip contentStyle={TOOLTIP_STYLE} itemStyle={TOOLTIP_ITEM} labelStyle={TOOLTIP_LABEL} />
             </PieChart>
           )}
         </ResponsiveContainer>
