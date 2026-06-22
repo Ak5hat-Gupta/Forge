@@ -4,6 +4,14 @@
 
 Upload a CSV or Excel file and Forge generates a complete application with authentication, CRUD operations, search, filters, auto-generated charts, and a REST API.
 
+### 🔗 Live Demo
+
+**Frontend:** [forge-opal-one.vercel.app](https://forge-opal-one.vercel.app) · **API docs:** [forge-21mm.onrender.com/docs](https://forge-21mm.onrender.com/docs)
+
+Sign in with the demo account — **`demo@forge.app`** / **`demo12345`** — or click *Try demo account*.
+
+> Hosted on free tiers (Vercel + Render + Neon). The backend may take ~50s to wake on the first request after inactivity.
+
 ## Features
 
 - **Smart Schema Inference** — Automatically detects column types (boolean, integer, float, currency, date, email, URL, enum, string) with 80% confidence threshold
