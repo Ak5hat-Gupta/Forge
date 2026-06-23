@@ -40,7 +40,7 @@ function ChartCard({ chart, keyScope, loadData }: { chart: ChartRecommendation; 
         <div className={`grid ${isKpi ? "h-16" : "h-52"} place-items-center`}><Spinner className="h-5 w-5 text-violet" /></div>
       ) : isKpi ? (
         <div className="text-center">
-          <div className="text-5xl font-bold font-display nums text-gradient">{data?.value?.toLocaleString?.() ?? data?.value ?? "—"}</div>
+          <div className="truncate text-3xl lg:text-4xl font-bold font-display nums text-gradient leading-tight">{data?.value?.toLocaleString?.() ?? data?.value ?? "—"}</div>
           {data?.label && <div className="mt-1 text-xs text-ink-muted">{data.label}</div>}
         </div>
       ) : (
