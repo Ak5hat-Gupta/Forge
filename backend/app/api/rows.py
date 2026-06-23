@@ -87,6 +87,37 @@ def create_row(
     return RowOut.model_validate(row)
 
 
+@router.get("/export", response_model=None)
+def export_csv(
+    spreadsheet_id: int,
+    db: Session = Depends(get_db),
+    current: User = Depends(get_current_user),
+):
+    s = _get_spreadsheet_or_404(spreadsheet_id, db, current)
+    repo = RowRepository(db)
+    rows, _ = repo.query_rows(
+        spreadsheet_id=s.id,
+        columns=list(s.columns),
+        per_page=100000,
+    )
+
+    output = io.StringIO()
+    slugs = [c.slug for c in s.columns]
+    names = [c.name for c in s.columns]
+    writer = csv.writer(output)
+    writer.writerow(names)
+    for row in rows:
+        writer.writerow([row.data.get(slug, "") for slug in slugs])
+
+    output.seek(0)
+    filename = (s.filename or s.name or "export").rsplit(".", 1)[0] + ".csv"
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
 @router.get("/{row_id}", response_model=RowOut)
 def get_row(
     spreadsheet_id: int,
@@ -133,33 +164,3 @@ def delete_row(
     db.delete(row)
     s.row_count = max(0, s.row_count - 1)
     db.commit()
-
-
-@router.get("/export", response_model=None)
-def export_csv(
-    spreadsheet_id: int,
-    db: Session = Depends(get_db),
-    current: User = Depends(get_current_user),
-):
-    s = _get_spreadsheet_or_404(spreadsheet_id, db, current)
-    repo = RowRepository(db)
-    rows, _ = repo.query_rows(
-        spreadsheet_id=s.id,
-        columns=list(s.columns),
-        per_page=100000,
-    )
-
-    output = io.StringIO()
-    slugs = [c.slug for c in s.columns]
-    names = [c.name for c in s.columns]
-    writer = csv.writer(output)
-    writer.writerow(names)
-    for row in rows:
-        writer.writerow([row.data.get(slug, "") for slug in slugs])
-
-    output.seek(0)
-    return StreamingResponse(
-        output,
-        media_type="text/csv",
-        headers={"Content-Disposition": f"attachment; filename={s.filename}"},
-    )
