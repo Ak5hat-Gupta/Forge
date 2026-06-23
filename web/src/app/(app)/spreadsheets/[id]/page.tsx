@@ -82,8 +82,14 @@ export default function SpreadsheetDetail() {
     else { setSortBy(col); setSortDir("asc"); }
   }, [sortBy]);
 
-  const exportCSV = () => {
-    window.open(`${api.defaults.baseURL}/spreadsheets/${id}/rows/export?format=csv`, "_blank");
+  const exportCSV = async () => {
+    const res = await api.get(`/spreadsheets/${id}/rows/export?format=csv`, { responseType: "blob" });
+    const url = URL.createObjectURL(res.data);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = sheet?.filename ?? `spreadsheet-${id}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   if (sheetLoading) return <div className="grid min-h-[60vh] place-items-center"><Spinner className="h-8 w-8 text-violet" /></div>;
