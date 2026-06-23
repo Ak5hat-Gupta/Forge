@@ -6,23 +6,39 @@ Upload a CSV or Excel file and Forge generates a complete application with authe
 
 ### 🔗 Live Demo
 
-**Frontend:** [forge-opal-one.vercel.app](https://forge-opal-one.vercel.app) · **API docs:** [forge-21mm.onrender.com/docs](https://forge-21mm.onrender.com/docs)
+**App:** [forge-opal-one.vercel.app](https://forge-opal-one.vercel.app) · **API docs:** [forge-21mm.onrender.com/docs](https://forge-21mm.onrender.com/docs) · **Example shared dashboard:** [live link](https://forge-opal-one.vercel.app/share/asNpnVuKDCUFs-QI)
 
 Sign in with the demo account — **`demo@forge.app`** / **`demo12345`** — or click *Try demo account*.
 
 > Hosted on free tiers (Vercel + Render + Neon). The backend may take ~50s to wake on the first request after inactivity.
 
+![Forge landing](screenshots/login.png)
+
+> Upload a spreadsheet → Forge auto-builds a dashboard with KPIs, charts, and a searchable table:
+
+![Forge dashboard](screenshots/dashboard.gif)
+
 ## Features
 
-- **Smart Schema Inference** — Automatically detects column types (boolean, integer, float, currency, date, email, URL, enum, string) with 80% confidence threshold
-- **Dynamic CRUD** — Full create, read, update, delete with pagination, sorting, and full-text search across JSONB data
-- **Auto-Generated Charts** — Rule-based chart recommendations: line charts for time series, bar charts for categorical data, donut charts for enums, KPI cards for numeric summaries
-- **Type-Aware Forms** — Dynamic form generation that maps each column type to the right input widget
-- **Eject to Code** — Generate and download a complete, standalone Next.js + FastAPI project from your spreadsheet — typed SQLAlchemy models, Pydantic schemas, CRUD API, seed data, and a React UI. No JSONB, no lock-in: real, runnable source.
-- **Public Sharing** — One-click read-only share links (`/share/{token}`) with search, sort, and pagination — no login required for viewers.
-- **CSV/Excel Export** — One-click data export
-- **Auth & Multi-tenancy** — JWT-based authentication with per-user data isolation
-- **REST API** — Full OpenAPI-documented API at `/docs`
+**Ingest & understand**
+- **Upload** CSV or Excel (`.csv` / `.xlsx` / `.xls`) via drag-and-drop.
+- **Smart schema inference** — a two-pass engine auto-detects each column's type (boolean, integer, float, currency, date, email, URL, enum, string) at an 80% confidence threshold.
+
+**Work with the data**
+- **Interactive table** — full-text search, per-column sort, pagination, and type-aware rendering (emails as links, booleans as colored Yes/No, currency, dates).
+- **Full CRUD** via **type-aware forms** — each column type maps to the right input (checkbox, dropdown, date picker, number field) automatically.
+- **CSV export** — one-click download.
+
+**Auto-generated dashboards**
+- **Rule-based charts** with zero config: KPI cards for numerics, line charts for time series, bar charts for category-vs-numeric, donut charts for distributions.
+
+**Ship it — two outputs**
+- **Public share link** → a live, hosted, read-only **dashboard** (KPIs + charts + searchable table) at `/share/{token}`. No login, sendable to anyone.
+- **Eject to code** → download a complete, standalone **Next.js + FastAPI** project — typed SQLAlchemy models, Pydantic schemas, a real CRUD REST API, seed data, and a React UI. Runnable, no lock-in.
+
+**Platform**
+- **REST API** — every operation is an OpenAPI-documented endpoint at `/docs`.
+- **Auth & multi-tenancy** — JWT authentication with per-user data isolation (+ a demo account).
 
 ## Architecture
 
