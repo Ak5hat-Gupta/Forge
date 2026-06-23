@@ -12,6 +12,9 @@ const TOOLTIP_STYLE = { background: "#FFFFFF", border: "1px solid #E4DEF5", bord
 const TOOLTIP_ITEM = { color: "#1B1638" } as const;
 const TOOLTIP_LABEL = { color: "#5C5685", fontWeight: 600 } as const;
 
+const fmtNum = (n: any) =>
+  typeof n === "number" ? n.toLocaleString(undefined, { maximumFractionDigits: 2 }) : (n ?? "—");
+
 const PIE_RAD = Math.PI / 180;
 function renderPieLabel({ cx, cy, midAngle, outerRadius, percent, name }: any) {
   const r = outerRadius + 16;
@@ -37,11 +40,17 @@ function ChartCard({ chart, keyScope, loadData }: { chart: ChartRecommendation; 
     <Card className={isKpi ? "" : "md:col-span-1"}>
       <h3 className="mb-4 text-sm font-semibold">{chart.title}</h3>
       {isLoading ? (
-        <div className={`grid ${isKpi ? "h-16" : "h-52"} place-items-center`}><Spinner className="h-5 w-5 text-violet" /></div>
+        <div className={`grid ${isKpi ? "h-24" : "h-52"} place-items-center`}><Spinner className="h-5 w-5 text-violet" /></div>
       ) : isKpi ? (
-        <div className="text-center">
-          <div className="truncate text-3xl lg:text-4xl font-bold font-display nums text-gradient leading-tight">{data?.value?.toLocaleString?.() ?? data?.value ?? "—"}</div>
-          {data?.label && <div className="mt-1 text-xs text-ink-muted">{data.label}</div>}
+        <div>
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-ink-faint">Average</div>
+          <div className="mt-1 truncate text-3xl lg:text-4xl font-bold font-display nums text-gradient leading-tight">
+            {fmtNum(data?.value)}
+          </div>
+          <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1 border-t border-line pt-3 text-xs">
+            <span className="text-ink-faint">Range <span className="nums font-semibold text-ink-muted">{fmtNum(data?.min)}–{fmtNum(data?.max)}</span></span>
+            <span className="text-ink-faint">Rows <span className="nums font-semibold text-ink-muted">{fmtNum(data?.count)}</span></span>
+          </div>
         </div>
       ) : (
         <ResponsiveContainer width="100%" height={220}>
