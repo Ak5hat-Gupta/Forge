@@ -83,13 +83,20 @@ export default function SpreadsheetDetail() {
   }, [sortBy]);
 
   const exportCSV = async () => {
-    const res = await api.get(`/spreadsheets/${id}/rows/export?format=csv`, { responseType: "blob" });
-    const url = URL.createObjectURL(res.data);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = sheet?.filename ?? `spreadsheet-${id}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+    try {
+      const res = await api.get(`/spreadsheets/${id}/rows/export?format=csv`, { responseType: "blob" });
+      const blob = new Blob([res.data], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = sheet?.filename?.replace(/\.(xlsx?|csv)$/i, "") + ".csv" || `spreadsheet-${id}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (e) {
+      setErr(apiErr(e, "Export failed"));
+    }
   };
 
   if (sheetLoading) return <div className="grid min-h-[60vh] place-items-center"><Spinner className="h-8 w-8 text-violet" /></div>;
