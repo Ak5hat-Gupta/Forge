@@ -11,8 +11,16 @@ from app.models.user import User
 from app.repositories.row import RowRepository
 from app.repositories.spreadsheet import SpreadsheetRepository
 from app.schemas.spreadsheet import ColumnOut, SpreadsheetOut
+from app.services.charts import compute_chart_data, recommend_charts
 
 router = APIRouter(tags=["share"])
+
+
+def _require_shared(token: str, db: Session):
+    sheet = SpreadsheetRepository(db).get_by_share_token(token)
+    if not sheet:
+        raise HTTPException(404, "Shared spreadsheet not found")
+    return sheet
 
 
 @router.post("/spreadsheets/{spreadsheet_id}/share")
@@ -89,3 +97,24 @@ def public_rows(
         "columns": [ColumnOut.model_validate(c).model_dump() for c in sheet.columns],
         "name": sheet.name,
     }
+
+
+@router.get("/public/{token}/charts/recommend")
+def public_chart_recommend(token: str, db: Session = Depends(get_db)):
+    sheet = _require_shared(token, db)
+    return recommend_charts(list(sheet.columns))
+
+
+@router.get("/public/{token}/charts/data")
+def public_chart_data(
+    token: str,
+    chart_type: str = Query(...),
+    x_column: str | None = Query(None),
+    y_column: str | None = Query(None),
+    db: Session = Depends(get_db),
+):
+    sheet = _require_shared(token, db)
+    rows, _ = RowRepository(db).query_rows(
+        spreadsheet_id=sheet.id, columns=list(sheet.columns), per_page=10000,
+    )
+    return compute_chart_data([r.data for r in rows], chart_type, x_column, y_column)
