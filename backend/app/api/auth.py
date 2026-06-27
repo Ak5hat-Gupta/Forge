@@ -10,6 +10,7 @@ from app.core.security import create_access_token, hash_password, verify_passwor
 from app.models.user import User
 from app.repositories import UserRepository
 from app.schemas.auth import Token, UserCreate, UserLogin, UserOut
+from app.services.demo_seed import create_guest_user
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -47,6 +48,15 @@ def login_json(payload: UserLogin, db: Session = Depends(get_db)) -> Token:
     user = UserRepository(db).get_by_email(payload.email)
     if not user or not verify_password(payload.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Incorrect email or password.")
+    return _issue_token(user)
+
+
+@router.post("/demo", response_model=Token, status_code=status.HTTP_201_CREATED)
+def demo(db: Session = Depends(get_db)) -> Token:
+    """Spin up a fresh, isolated demo sandbox (its own throwaway account
+    pre-seeded with sample data) and log the visitor straight into it, so no
+    two visitors ever share uploads."""
+    user = create_guest_user(db)
     return _issue_token(user)
 
 

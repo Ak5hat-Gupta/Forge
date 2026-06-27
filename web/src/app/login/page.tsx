@@ -8,7 +8,7 @@ import { apiErr } from "@/lib/api";
 import { ErrorNote, Spinner } from "@/components/ui";
 
 export default function Login() {
-  const { login } = useAuth();
+  const { login, demo: demoLogin } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,7 +25,7 @@ export default function Login() {
 
   const demo = async () => {
     setError(""); setLoading(true);
-    try { await login("demo@forge.app", "demo12345"); router.push("/dashboard"); }
+    try { await demoLogin(); router.push("/dashboard"); }
     catch (err) { setError(apiErr(err, "Demo login failed")); }
     finally { setLoading(false); }
   };
@@ -85,7 +85,7 @@ export default function Login() {
             <div><label className="lbl">Password</label><input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="field" placeholder="••••••••" required /></div>
             <button type="submit" disabled={loading} className="btn-primary w-full">{loading ? <Spinner className="h-4 w-4" /> : "Sign in"}</button>
           </form>
-          <button onClick={demo} disabled={loading} className="btn-ghost w-full text-xs">✦ Try demo account</button>
+          <button onClick={demo} disabled={loading} className="btn-ghost w-full text-xs">{loading ? <Spinner className="h-4 w-4" /> : "✦ Launch a private demo sandbox"}</button>
           <p className="text-center text-sm text-ink-muted">
             No account?{" "}
             <Link href="/register" className="font-semibold text-violet hover:text-magenta transition-colors">Create one</Link>

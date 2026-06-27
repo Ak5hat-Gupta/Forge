@@ -7,6 +7,7 @@ interface AuthState {
   ready: boolean;
   hydrate: () => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
+  demo: () => Promise<void>;
   register: (
     email: string,
     password: string,
@@ -31,6 +32,11 @@ export const useAuth = create<AuthState>((set) => ({
     const r = await api.post("/auth/login", form, {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
     });
+    setToken(r.data.access_token);
+    set({ user: r.data.user });
+  },
+  demo: async () => {
+    const r = await api.post("/auth/demo");
     setToken(r.data.access_token);
     set({ user: r.data.user });
   },
